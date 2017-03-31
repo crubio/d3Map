@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+	<title>D3 map examples using geoJSON</title>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="js/map.js"></script>
+	<script src="data/neighborhoods.js"></script>
+	<script src="data/rodents.js"></script>
+	<script src="boston/boston.js"></script>
+	<link rel="stylesheet" href="boston/boston.css">
+</head>
+<body>
+	<p>Map examples using geoJSON data</p>
+	<div>
+		<p>Boston rat infestation map</p>
+	</div>
+
+	<script type="text/javascript">
+		Map.draw(myParams);
+		// Examples after our DOM elements are built
+
+		// Add some opactity function to neighborhoods based on density values of our data and a few interactions
+		var neighborhoods = d3.select("#neighborhoods");
+		neighborhoods.selectAll('path')
+			.attr("fill-opacity", function(d) {
+				var density = Math.round(d.properties.density);
+				if (density > 10) {
+					density = (density * .01) + 0.20
+				} else {
+					density = (density * .1) + 0.20;
+				}
+				return density;
+			}) // Add interactivity
+			.on("mouseover", function(d) {
+				d3.select(this).attr({
+					"stroke": "#d88b30",
+					"stroke-width": 2
+				})
+			})
+			.on("mouseout", function(d) {
+				d3.select(this).attr({
+					"stroke": "transparent",
+					"stroke-width": 1
+				});
+			})
+
+		// Adding more to the d attribute. We can get our old geoPath from Map.get()	
+		var bigRats = d3.select("#bigrats");
+		bigRats.selectAll("path")
+			.attr("fill", "#d88b30")
+			.attr("opacity", function(d) {
+				return .6;
+			})
+			.attr("d", Map.get().geoPaths[2].pointRadius(function(d) {
+				console.log(d.properties);
+				return (d.properties.ratcount / 2);
+			}))
+	</script>
+</body>
